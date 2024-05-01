@@ -35,6 +35,7 @@ app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
 
 
+
 @app.route('/')
 def index():
     return render_template('index1.html')
@@ -58,6 +59,7 @@ def signup():
         return jsonify({'message': 'Користувач успішно зареєстрований'})
     else:
         return render_template('signup.html')
+
 
 
 
@@ -85,5 +87,9 @@ def login():
 
 
 
+
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
+
