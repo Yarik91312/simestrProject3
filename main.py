@@ -1,4 +1,4 @@
-from flask import Flask, request, session, jsonify, render_template, redirect, url_for
+from flask import Flask, request, session, jsonify, render_template, redirect, url_for, make_response
 from sqlalchemy import create_engine, Column, String, Date, Integer
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -61,13 +61,18 @@ def signup():
         return render_template('signup.html')
 
 
+from flask import make_response
 
 
-@app.route('/login', methods=['GET','POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        if not username or not password:
+            return jsonify({'message': 'Потрібно ввести ім`я користувача і пароль'}), 400
+
         Session = sessionmaker(bind=engine)
         db_session = Session()
         user = db_session.query(User).filter_by(username=username, password=password).first()
@@ -75,19 +80,15 @@ def login():
         if user:
             session['logged_in'] = True
             db_session.close()
-            return jsonify({'message': 'Вхід успішний'})
 
-
+            response = jsonify({'message': 'Вхід успішний'})
+            response.set_cookie('username', username)
+            return response
         else:
             db_session.close()
             return jsonify({'message': 'Неправильне ім`я користувача або пароль'}), 401
     else:
         return render_template('login.html')
-
-
-
-
-
 
 
 if __name__ == '__main__':
