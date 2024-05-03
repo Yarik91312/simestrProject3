@@ -8,7 +8,7 @@ import flask_wtf
 import wtforms
 from flask import request, Flask, render_template, url_for, redirect,session,jsonify
 from wtforms import StringField, SubmitField, IntegerField, PasswordField , DateField
-from sqlalchemy.orm import DeclarativeBase , sessionmaker, Mapped
+from sqlalchemy.orm import DeclarativeBase , sessionmaker, Mapped, mapped_column
 from wtforms.validators import InputRequired
 api_key = "6ef4e7612bde555867a4a6aa9c2fe746"
 
@@ -17,18 +17,31 @@ Session = sessionmaker(bind=engine)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '07031986'
-# class Base(DeclarativeBase):
-#     def create_db(self):
-#         Base.metadata.create_all(engine)
-#
-#     def drop_db(self):
-#         Base.metadata.drop_all(engine)
+class Base(DeclarativeBase):
+    def create_db(self):
+        Base.metadata.create_all(engine)
+
+    def drop_db(self):
+        Base.metadata.drop_all(engine)
 class City(flask_wtf.FlaskForm):
     city = wtforms.StringField('Введіть місто', validators=[wtforms.validators.InputRequired()])
     submit = wtforms.SubmitField('Goo!')
 
 class Submit(flask_wtf.FlaskForm):
     submit = wtforms.SubmitField('Дізнатися погоду')
+
+class text(Base):
+    __tablename__ = "text"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    text1: Mapped[int] = mapped_column(String(80))
+    user_id: Mapped[int] = mapped_column(ForeignKey('log.id'))
+
+@app.route('/')
+def f_1():
+    return render_template('host.html')
+@app.route('/weather_pg')
+def f_6():
+    return render_template('weather_pg1.html')
 
 @app.route('/weather', methods = ['POST'])
 def f_7():
@@ -46,8 +59,9 @@ def f_7():
     else:
         data = {'Тeмпература': f'Виникла помилка('}
     return jsonify(data), 200
-@app.route('/weather_pg')
-def f_6():
-    return render_template('.html')
+
+# base =Base()
+# base.create_db()
+
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
