@@ -61,8 +61,6 @@ def signup():
         return render_template('signup.html')
 
 
-from flask import make_response
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
