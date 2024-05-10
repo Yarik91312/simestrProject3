@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecast</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Weather Forecast</h1>
+        <form id="weather-form">
+            <label for="city">Enter city:</label>
+            <input type="text" id="city" name="city">
+            <button type="submit">Get Forecast</button>
+        </form>
+        <div id="forecast"></div>
+    </div>
+<script>
+    document.getElementById('weather-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var city = document.getElementById('city').value;
+        fetch('/weather_5day', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'text=' + city
+        })
+        .then(response => response.json())
+        .then(data => {
+            var forecastDiv = document.getElementById('forecast');
+            forecastDiv.innerHTML = '';
+            var forecastList = document.createElement('ul');
+            data.forecast.forEach(function(forecast) {
+                var listItem = document.createElement('li');
+                listItem.classList.add('forecast-item');
+                listItem.innerHTML = '<strong>Date:</strong> ' + forecast.date + '<br>' +
+                                    '<strong>Temperature:</strong> ' + forecast.temperature + '°C<br>' +
+                                    '<strong>Humidity:</strong> ' + forecast.humidity + '%<br>' +
+                                    '<strong>Wind Speed:</strong> ' + forecast.wind_speed + ' m/s';
+                forecastList.appendChild(listItem);
+            });
+            forecastDiv.appendChild(forecastList);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            var forecastDiv = document.getElementById('forecast');
+            forecastDiv.innerHTML = '<p>Error retrieving forecast data.</p>';
+        });
+    });
+</script>
+
+</body>
+</html>

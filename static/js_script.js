@@ -1,6 +1,7 @@
 const routes = [
     { path: '/weather_pg', handler: weatherHandler },
-
+    { path: '/weather_day', handler: weather5dayHandler}
+   ]
 function RequestToServer(form, url) {
     const formData = new FormData(form);
     console.log('Я RequestToServer');
@@ -35,11 +36,26 @@ function weatherHandler() {
         event.preventDefault();
         RequestToServer(event.target, urlWeather)
         .then(response => {
-            res.innerHTML = `<p>Тeмпература: ${response["Тeмпература"]}°</p> <p>Вологість: ${response["Вологість"]} %</p> <p> Швидкість вітру: ${response["Швидкість вітру:"]} км/год</p>`;
+            res.innerHTML = `<p>Тeмпература: ${response["Тeмпература"]}°</p> <p>Вологість: ${response["Вологість"]} %</p> <p> Швидкість вітру: ${response["Швидкість вітру:"]} км/год</p>
+            <img src="data:image/jpeg;base64,foto_weather/${response['Картинка']}">`;
         });
     });
 };
 
+function weather5dayHandler() {
+    const Form = document.querySelector('#weather-form');
+    const res = document.getElementById('forecast');
+
+    const urlWeather = '/weather_5day';
+    console.log('Я loginHandler');
+    Form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        RequestToServer(event.target, urlWeather)
+        .then(response => {
+            res.innerHTML = `forecast`;
+        });
+    });
+};
 document.addEventListener("DOMContentLoaded", function() {
     handleRoutes();
 });
